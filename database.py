@@ -1,5 +1,7 @@
 import sqlite3
 import openpyxl
+import barcode
+
 #Opening the Excel file
 wb = openpyxl.load_workbook("Movies-Database.xlsx")
 ws = wb.active
