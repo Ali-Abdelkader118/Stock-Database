@@ -1,43 +1,112 @@
 import sqlite3
 import openpyxl
-import barcode
-
-#Opening the Excel file
-wb = openpyxl.load_workbook("Movies-Database.xlsx")
-ws = wb.active
-ID = 2
+from barcode import Code39
+from barcode.writer import ImageWriter
 
 #Creating The Database File And opening It
-db = sqlite3.connect("Movies.db")
+db = sqlite3.connect("Stock.db")
 c = db.cursor()
 
-#Creating The Table If Not Exist
-c.execute("DROP TABLE IF EXISTS Movies")
-c.execute("CREATE TABLE Movies (MovieID TEXT NOT NULL UNIQUE, Movie_Name TEXT NOT NULL ,Movie_Year TEXT,Movie_Rate TEXT , Genere_1 TEXT ,Genere_2 TEXT ,Genere_3 TEXT ,Director TEXT, Runtime TEXT, Poster TEXT , Plot Text)")
+files = ['A', 'B', 'C', 'D', 'E']
 
-while ID <= 1030:
-    # Getting The Data From Excel  
-    imdb = ws[f"H{ID}"].value
-    M_name =ws[f"A{ID}"].value 
-    M_year = ws[f"B{ID}"].value
-    M_rate = ws[f"C{ID}"].value
-    gn1 = ws[f"D{ID}"].value
-    gn2 = ws[f"E{ID}"].value
-    gn3 = ws[f"F{ID}"].value
-    dr = ws[f"G{ID}"].value
-    rt = ws[f"I{ID}"].value
-    ps = ws[f"J{ID}"].value
-    pl = ws[f"K{ID}"].value
-    #Inserting The Data Into Sqlite Database
-    c.execute("INSERT INTO Movies(MovieID , Movie_Name , Movie_Year , Movie_Rate ,Genere_1 , Genere_2 , Genere_3 , Director , Runtime , Poster , Plot ) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",(imdb , M_name , M_year , M_rate , gn1 , gn2, gn3, dr ,rt , ps , pl))
-    #Printing The Fianl Result
-    print("Data Inserted in the table: ")
-    data=c.execute('''SELECT * FROM Movies''')
-    for row in data:
-        print(row)
-    #increasing the ID Count to Switch to next Row
-    ID = ID + 1
+def Search_data():
+    code = input('Input Your Code: ').upper()
+    print(code)
+    if len(code) != 6 :
+        print("Code Incorrect")
+    else:
+        if code[0] in files  :
+            l = code[0]
+            d = c.execute(f"SELECT * FROM {l} WHERE Barcode=?",(code,),).fetchall()
+            print(d)
+        else:
+            print("code Not Found")
 
-#Saving And Closing
+
+
+def Create_Barcode():
+    files = ['A', 'B', 'C', 'D', 'E']
+    #Looping All File Names
+    for i in files:
+        #Getting Data From The Database
+        c.execute(f'''select Barcode , Product_Name from {i}''')
+        data = c.fetchall()
+        #Looping For Creating The Barcode
+        for i in data:
+            print(r"ID : ", i[0])
+            print(r"Name :", i[1])
+            print("\n")
+            #Creating The Barcode
+            my_code = Code39(i[0], writer=ImageWriter())
+            #Saving The Barcode As Image
+            my_code.save(f"{i[0]}")
+
+
+
+def Insert_data():
+    #Getting The User Input For The File Name And Number Of Rows 
+    file = input("Enter File Name: ")
+    n_rows = int(input("Enter Number Of Rows: "))
+    #Opening the Excel file
+    wb = openpyxl.load_workbook(f"{file}.xlsx")
+    ws = wb.active
+    ID = 1
+    #Creating The Table If Not Exist
+    c.execute(f"DROP TABLE IF EXISTS {file}")
+    c.execute(f"CREATE TABLE {file}(Barcode TEXT NOT NULL UNIQUE, Product_Name TEXT NOT NULL)")
+    while ID <= n_rows:
+        # Getting The Data From Excel
+        Barcode = ws[f"A{ID}"].value
+        Product_Name = ws[f"B{ID}"].value
+        #Inserting The Data Into Sqlite Database
+        c.execute(f"INSERT INTO {file}(Barcode , Product_Name) values(?, ?)",(Barcode , Product_Name))
+        #Printing The Final Result
+        print("Data Inserted in the table: ")
+        data=c.execute(f'''SELECT * FROM {file}''')
+        for row in data:
+            print(row)
+        #increasing the ID Count to Switch to next Row
+        ID = ID + 1
+
+def Add_item():
+    Item_ID = input("Enter Item ID: ").upper()
+    n = int(input("Enter Added Number: "))
+
+    if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str() and Item_ID[0] in files:
+        print("Code Incorrect")
+    else:
+            l = Item_ID[0]
+            d = c.execute(f"SELECT QTY FROM {l} WHERE Barcode=?",(Item_ID,),).fetchone()
+            print(f"Old Number : {d}")
+            d = int(d)
+            new_n = n + d
+            print(f"New Number : {new_n}")
+            c.execute(f"UPDATE {Item_ID} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
+            d = c.execute(f"SELECT * FROM {l} WHERE Barcode=?",(Item_ID,),).fetchall()
+            print(d)
+
+def Remove_item():
+    Item_ID = input("Enter Item ID: ").upper()
+    n = int(input("Enter Removed Number: "))
+
+    if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str() and Item_ID[0] in files:
+        print("Code Incorrect")
+    else:
+            l = Item_ID[0]
+            d = c.execute(f"SELECT QTY FROM {l} WHERE Barcode=?",(Item_ID,),).fetchone()
+            print(f"Old Number : {d}")
+            d = int(d)
+            new_n = d - n
+            print(f"New Number : {new_n}")
+            c.execute(f"UPDATE {Item_ID} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
+            d = c.execute(f"SELECT * FROM {l} WHERE Barcode=?",(Item_ID,),).fetchall()
+            print(d)
+
+
+
+
+
+
+
+#Saving The Database
 db.commit()
-db.close()
