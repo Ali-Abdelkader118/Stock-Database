@@ -1,5 +1,7 @@
 import sqlite3
 import openpyxl
+from tkinter import *
+import tkinter.ttk as ttk
 from barcode import Code39
 from barcode.writer import ImageWriter
 
@@ -23,6 +25,11 @@ def Search_data():
             print("code Not Found")
 
 
+
+def Search_Name():
+    name = input("Enter Product_Name : ")
+    for i in files:
+        c.execute(f"SELECT * FROM {i} WHERE ")
 
 def Create_Barcode():
     files = ['A', 'B', 'C', 'D', 'E']
@@ -113,6 +120,94 @@ def Remove_item():
             d = c.execute(f"SELECT * FROM {l} WHERE Barcode=?",(Item_ID,),).fetchall()
             print(d)
             db.commit()
+
+
+
+def DisplayForm():
+    #creating window
+    display_screen = Tk()
+    #setting width and height for window
+    display_screen.geometry("800x800")
+    #setting title for window
+    display_screen.title("BMA Stock Database")
+    global tree
+    global SEARCH
+    SEARCH = StringVar()
+    #creating frame
+    TopViewForm = Frame(display_screen, width=600, bd=1, relief=SOLID)
+    TopViewForm.pack(side=TOP, fill=X)
+    LeftViewForm = Frame(display_screen, width=600)
+    LeftViewForm.pack(side=LEFT, fill=Y)
+    MidViewForm = Frame(display_screen, width=600)
+    MidViewForm.pack(side=RIGHT)
+    lbl_text = Label(TopViewForm, text="BMA Stock Database", font=('verdana', 18), width=600,bg="#1C2833",fg="white")
+    lbl_text.pack(fill=X)
+    lbl_txtsearch = Label(LeftViewForm, text="Search", font=('verdana', 15))
+    lbl_txtsearch.pack(side=TOP, anchor=W)
+
+    search = Entry(LeftViewForm, textvariable=SEARCH, font=('verdana', 15), width=10)
+    search.pack(side=TOP, padx=10, fill=X)
+    btn_search = Button(LeftViewForm, text="Search", command=SearchRecord)
+    btn_search.pack(side=TOP, padx=10, pady=10, fill=X)
+    btn_search = Button(LeftViewForm, text="View All", command=DisplayData)
+    btn_search.pack(side=TOP, padx=10, pady=10, fill=X)
+        #setting scrollbar
+    scrollbarx = Scrollbar(MidViewForm, orient=HORIZONTAL)
+    scrollbary = Scrollbar(MidViewForm, orient=VERTICAL)
+    tree = ttk.Treeview(MidViewForm,columns=("Barcode", "Product_Name", "QTY"),
+                        selectmode="extended", height=100, yscrollcommand=scrollbary.set, xscrollcommand=scrollbarx.set)
+    scrollbary.config(command=tree.yview)
+    scrollbary.pack(side=RIGHT, fill=Y)
+    scrollbarx.config(command=tree.xview)
+    scrollbarx.pack(side=BOTTOM, fill=X)
+    #setting headings for the columns
+    tree.heading('Barcode', text="Barcode", anchor=W)
+    tree.heading('Product_Name', text="Product_Name", anchor=W)
+    tree.heading('QTY', text="QTY", anchor=W)
+    #setting width of the columns
+    tree.column('#0', stretch=NO, minwidth=0, width=0)
+    tree.column('#1', stretch=NO, minwidth=0, width=100)
+    tree.column('#2', stretch=NO, minwidth=0, width=150)
+
+    tree.pack()
+    DisplayData()
+#function to search data
+def SearchRecord():
+    #checking search text is empty or not
+    if SEARCH.get() != "":
+        #clearing current display data
+        tree.delete(*tree.get_children())
+        #open database
+        conn = sqlite3.connect('Stock.db')
+        #select query with where clause
+        cursor=conn.execute("SELECT * FROM A WHERE Product_Name LIKE ?", ('%' + str(SEARCH.get()) + '%',))
+        #fetch all matching records
+        fetch = cursor.fetchall()
+        #loop for displaying all records into GUI
+        for data in fetch:
+            tree.insert('', 'end', values=(data))
+        cursor.close()
+        conn.close()
+#defining function to access data from SQLite database
+def DisplayData():
+    #clear current data
+    tree.delete(*tree.get_children())
+    # open databse
+    conn = sqlite3.connect('Stock.db')
+    #select query
+    cursor=conn.execute("SELECT * FROM A")
+    #fetch all data from database
+    fetch = cursor.fetchall()
+    #loop for displaying all data in GUI
+    for data in fetch:
+        tree.insert('', 'end', values=(data))
+    cursor.close()
+    conn.close()
+
+DisplayForm()
+if __name__=='__main__':
+#Running Application
+    mainloop()
 
 
 f = input("Hi , What Would You Like To Do ? ( Search - ADD - Remove - Create Barcodes) : ").upper()
