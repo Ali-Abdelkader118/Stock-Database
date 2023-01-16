@@ -1,6 +1,5 @@
 import sqlite3
 import openpyxl
-import functools
 from barcode import Code39
 from barcode.writer import ImageWriter
 
