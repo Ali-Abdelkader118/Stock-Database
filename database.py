@@ -40,7 +40,7 @@ def Excel_Data():
     #Getting The User Input For The File Name And Number Of Rows 
     n_rows = int(input("Enter Number Of Rows: "))
     #Opening the Excel 
-    wb = openpyxl.load_workbook(f"Data/A.xlsx")
+    wb = openpyxl.load_workbook(f"Data/Main.xlsx")
     ws = wb.active
     ID = 1
     #Creating The Table If Not Exist
