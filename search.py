@@ -3,7 +3,6 @@
 #import library for creating GUI
 from tkinter import *
 import tkinter.ttk as ttk
-import awesometkinter as atk
 #import library for handling SQLite database
 import sqlite3
 #defining function for creating GUI Layout
