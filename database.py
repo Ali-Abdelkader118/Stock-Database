@@ -53,13 +53,13 @@ def Excel_Data():
         n = 1
         #Inserting The Data Into Sqlite Database
         c.execute(f"INSERT INTO Main(Barcode , Product_Name, QTY) values(?, ?, ?)",(Barcode , Product_Name, n))
-        #Printing The Final Result
-        print("Data Inserted in the table: ")
-        data=c.execute(f'''SELECT * FROM Main''')
-        for row in data:
-            print(row)
         #increasing the ID Count to Switch to next Row
         ID = ID + 1
+    #Printing The Final Result
+    print("Data Inserted in the table: ")
+    data=c.execute(f'''SELECT * FROM Main''')
+    for row in data:
+        print(row)
     db.commit()
 
 
