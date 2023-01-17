@@ -7,7 +7,6 @@ from barcode.writer import ImageWriter
 db = sqlite3.connect("Stock.db")
 c = db.cursor()
 
-files = 'A'
 
 def Search_data():
     code = input('Input Your Code: ').upper()
@@ -15,11 +14,9 @@ def Search_data():
     if len(code) != 6 :
         print("Code Incorrect")
     else:
-        if code[0] in files  :
-            d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(code,),).fetchall()
-            print(d)
-        else:
-            print("code Not Found")
+        d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(code,),).fetchall()
+        print(d)
+
 
 
 
@@ -43,7 +40,7 @@ def Excel_Data():
     #Getting The User Input For The File Name And Number Of Rows 
     n_rows = int(input("Enter Number Of Rows: "))
     #Opening the Excel 
-    wb = openpyxl.load_workbook(f"Data/Main.xlsx")
+    wb = openpyxl.load_workbook(f"Data/A.xlsx")
     ws = wb.active
     ID = 1
     #Creating The Table If Not Exist
@@ -56,13 +53,13 @@ def Excel_Data():
         n = 1
         #Inserting The Data Into Sqlite Database
         c.execute(f"INSERT INTO Main(Barcode , Product_Name, QTY) values(?, ?, ?)",(Barcode , Product_Name, n))
+        #Printing The Final Result
+        print("Data Inserted in the table: ")
+        data=c.execute(f'''SELECT * FROM Main''')
+        for row in data:
+            print(row)
         #increasing the ID Count to Switch to next Row
         ID = ID + 1
-    #Printing The Final Result
-    print("Data Inserted in the table: ")
-    data=c.execute(f'''SELECT * FROM Main''')
-    for row in data:
-        print(row)
     db.commit()
 
 
@@ -71,7 +68,7 @@ def Add_item():
     Item_ID = input("Enter Item ID: ").upper()
     n = int(input("Enter Added Number: "))
 
-    if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str() and Item_ID[0] in files:
+    if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str():
         print("Code Incorrect")
     else:
             d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
@@ -92,7 +89,7 @@ def Remove_item():
     Item_ID = input("Enter Item ID: ").upper()
     n = int(input("Enter Removed Number: "))
 
-    if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str() and Item_ID[0] in files:
+    if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str():
         print("Code Incorrect")
     else:
             d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
