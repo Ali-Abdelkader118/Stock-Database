@@ -24,21 +24,18 @@ def Search_data():
 
 
 def Create_Barcode():
-    files = 'A'
-    #Looping All File Names
-    for i in files:
-        #Getting Data From The Database
-        c.execute(f'''select Barcode , Product_Name from {i}''')
-        data = c.fetchall()
-        #Looping For Creating The Barcode
-        for i in data:
-            print(r"ID : ", i[0])
-            print(r"Name :", i[1])
-            print("\n")
-            #Creating The Barcode
-            my_code = Code39(i[0], writer=ImageWriter())
-            #Saving The Barcode As Image
-            my_code.save(f"Barcodes/{i[0]}")
+    #Getting Data From The Database
+    c.execute(f'''select Barcode , Product_Name from Main''')
+    data = c.fetchall()
+    #Looping For Creating The Barcode
+    for i in data:
+        print(r"ID : ", i[0])
+        print(r"Name :", i[1])
+        print("\n")
+        #Creating The Barcode
+        my_code = Code39(i[0], writer=ImageWriter())
+        #Saving The Barcode As Image
+        my_code.save(f"Barcodes/{i[0]}")
 
 
 
@@ -77,7 +74,6 @@ def Add_item():
     if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str() and Item_ID[0] in files:
         print("Code Incorrect")
     else:
-            l = Item_ID[0]
             d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
             for i in d :
                 print(type(i))
@@ -99,7 +95,6 @@ def Remove_item():
     if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str() and Item_ID[0] in files:
         print("Code Incorrect")
     else:
-            l = Item_ID[0]
             d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
             for i in d :
                 print(type(i))
