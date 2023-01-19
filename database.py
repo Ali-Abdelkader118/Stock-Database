@@ -44,7 +44,7 @@ def Create_Barcode():
 def Excel_Data():
     #Getting The User Input For The File Name And Number Of Rows 
     n_rows = int(input("Enter Number Of Rows: "))
-    #Opening the Excel 
+    #Opening the Excel
     wb = openpyxl.load_workbook(f"Data/Main.xlsx")
     ws = wb.active
     ID = 1
@@ -77,22 +77,22 @@ def Add_item():
     if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str():
         print("Code Incorrect")
     else:
-            #Searching For The Product
-            d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
-            #Looping To Convert The Data From Tuple To Int
-            for i in d :
-                #Converting The Type Of i From Tuple To Int
-                i = int(i)
-                print(f"Old Number : {i}")
-                #Adding The New Given Number To The Old Number
-                new_n = i + n
-                print(f"New Number : {new_n}")
-                #Updating The Database With The New Data
-                c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
-            #printing The Results
-            d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
-            print(d)
-            db.commit()
+        #Searching For The Product
+        d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
+        #Looping To Convert The Data From Tuple To Int
+        for i in d :
+            #Converting The Type Of i From Tuple To Int
+            i = int(i)
+            print(f"Old Number : {i}")
+            #Adding The New Given Number To The Old Number
+            new_n = i + n
+            print(f"New Number : {new_n}")
+            #Updating The Database With The New Data
+            c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
+        #printing The Results
+        d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
+        print(d)
+        db.commit()
 
 
 
@@ -104,22 +104,22 @@ def Remove_item():
     if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str():
         print("Code Incorrect")
     else:
-            #Searching For The Product
-            d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
-            #Looping To Convert The Data From Tuple To Int
-            for i in d :
-                #Converting The Type Of i From Tuple To Int
-                i = int(i)
-                print(f"Old Number : {i}")
-                #Removing The New Given Number From The Old Number
-                new_n = i - n
-                print(f"New Number : {new_n}")
-                #Updating The Database With The New Data
-                c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
-            #printing The Results
-            d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
-            print(d)
-            db.commit()
+        #Searching For The Product
+        d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
+        #Looping To Convert The Data From Tuple To Int
+        for i in d :
+            #Converting The Type Of i From Tuple To Int
+            i = int(i)
+            print(f"Old Number : {i}")
+            #Removing The New Given Number From The Old Number
+            new_n = i - n
+            print(f"New Number : {new_n}")
+            #Updating The Database With The New Data
+            c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
+        #printing The Results
+        d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
+        print(d)
+        db.commit()
 
 
 def Search_Name():
