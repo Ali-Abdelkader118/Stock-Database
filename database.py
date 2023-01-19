@@ -125,9 +125,9 @@ def search_name():
         print("\n")
 
 f = input("Hi , What Would You Like To Do ? ( Search - ADD - Remove - Create Barcodes) : ").lower()
-if f != "search" and f != 'add' and f != 'remove' and f != r"create barcodes" and f != "excel":
+if f != "search by name" and f != "search by code" and f != 'add' and f != 'remove' and f != r"create barcodes" and f != "excel":
     print("Invalid Command")
-elif f == 'search' :
+elif f == 'search by name' :
     search_name()
 elif f == 'add' :
     add_item()
@@ -137,3 +137,5 @@ elif f ==  r"create barcodes" :
     create_barcode()
 elif f == r"excel" :
     excel_data()
+elif f == 'search by code' :
+    search_data()
