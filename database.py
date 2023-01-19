@@ -1,4 +1,3 @@
-import sys
 import sqlite3
 import openpyxl
 from barcode import Code39
