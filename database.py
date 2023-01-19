@@ -5,11 +5,9 @@ from barcode.writer import ImageWriter
 import arabic_reshaper
 from bidi.algorithm import get_display
 
-
 #Creating The Database File And opening It
 db = sqlite3.connect("Stock.db")
 c = db.cursor()
-
 
 def search_data():
     #Getting The User Input And Making It UPPER To Match The Database
@@ -21,9 +19,6 @@ def search_data():
         #Searching For The Code In The Database
         d = c.execute("SELECT * FROM Main WHERE Barcode=?",(code,),).fetchall()
         print(d)
-
-
-
 
 def create_barcode():
     #Getting Data From The Database
@@ -38,8 +33,6 @@ def create_barcode():
         my_code = Code39(i[0], writer=ImageWriter())
         #Saving The Barcode As Image
         my_code.save(f"Barcodes/{i[0]}")
-
-
 
 def excel_data():
     #Getting The User Input For The File Name And Number Of Rows 
@@ -67,8 +60,6 @@ def excel_data():
         ID = ID + 1
     db.commit()
 
-
-
 def add_item():
     #Getting The User Input
     Item_ID = input("Enter Item ID: ").upper()
@@ -93,8 +84,6 @@ def add_item():
         d = c.execute("SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
         print(d)
         db.commit()
-
-
 
 def remove_item():
     #Getting The User Input
@@ -121,7 +110,6 @@ def remove_item():
         print(d)
         db.commit()
 
-
 def search_name():
     #Getting The User Input
     code = input('Input Your Product Name: ')
@@ -135,8 +123,6 @@ def search_name():
         print("Product Name:" + get_display(text))
         print("Product QTY:" + i[2])
         print("\n")
-
-
 
 f = input("Hi , What Would You Like To Do ? ( Search - ADD - Remove - Create Barcodes) : ").lower()
 if f != "search" and f != 'add' and f != 'remove' and f != r"create barcodes" and f != "excel":
