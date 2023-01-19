@@ -40,7 +40,7 @@ def Excel_Data():
     #Getting The User Input For The File Name And Number Of Rows 
     n_rows = int(input("Enter Number Of Rows: "))
     #Opening the Excel 
-    wb = openpyxl.load_workbook(f"Main.xlsx")
+    wb = openpyxl.load_workbook(f"Data/Main.xlsx")
     ws = wb.active
     ID = 1
     #Creating The Table If Not Exist
@@ -53,13 +53,13 @@ def Excel_Data():
         n = 1
         #Inserting The Data Into Sqlite Database
         c.execute(f"INSERT INTO Main(Barcode , Product_Name, QTY) values(?, ?, ?)",(Barcode , Product_Name, n))
+        #Printing The Final Result
+        print("Data Inserted in the table: ")
+        data=c.execute(f'''SELECT * FROM Main''')
+        for row in data:
+            print(row)
         #increasing the ID Count to Switch to next Row
         ID = ID + 1
-    #Printing The Final Result
-    print("Data Inserted in the table: ")
-    data=c.execute(f'''SELECT * FROM Main''')
-    for row in data:
-        print(row)
     db.commit()
 
 
@@ -105,11 +105,19 @@ def Remove_item():
             db.commit()
 
 
+def Search_Name():
+    code = input('Input Your Product Name: ')
+    print(code)
+    d = c.execute(f"SELECT * FROM Main WHERE Product_Name LIKE ?",("%" + code + "%",),).fetchall()
+    for i in d :
+        print(i)
+
+
 f = input("Hi , What Would You Like To Do ? ( Search - ADD - Remove - Create Barcodes) : ").lower()
 if f != "search" and f != 'add' and f != 'remove' and f != r"create barcodes" and f != "excel":
     print("Invalid Command")
 elif f == 'search' :
-    Search_data()
+    Search_Name()
 elif f == 'add' :
     Add_item()
 elif f == 'remove' :
