@@ -11,7 +11,7 @@ db = sqlite3.connect("Stock.db")
 c = db.cursor()
 
 
-def Search_data():
+def search_data():
     #Getting The User Input And Making It UPPER To Match The Database
     code = input('Input Your Code: ').upper()
     #Checking If The Code Is Correct
@@ -25,7 +25,7 @@ def Search_data():
 
 
 
-def Create_Barcode():
+def create_barcode():
     #Getting Data From The Database
     c.execute('''select Barcode , Product_Name from Main''')
     data = c.fetchall()
@@ -41,7 +41,7 @@ def Create_Barcode():
 
 
 
-def Excel_Data():
+def excel_data():
     #Getting The User Input For The File Name And Number Of Rows 
     n_rows = int(input("Enter Number Of Rows: "))
     #Opening the Excel
@@ -69,7 +69,7 @@ def Excel_Data():
 
 
 
-def Add_item():
+def add_item():
     #Getting The User Input
     Item_ID = input("Enter Item ID: ").upper()
     n = int(input("Enter Added Number: "))
@@ -96,7 +96,7 @@ def Add_item():
 
 
 
-def Remove_item():
+def remove_item():
     #Getting The User Input
     Item_ID = input("Enter Item ID: ").upper()
     n = int(input("Enter Removed Number: "))
@@ -122,7 +122,7 @@ def Remove_item():
         db.commit()
 
 
-def Search_Name():
+def search_name():
     #Getting The User Input
     code = input('Input Your Product Name: ')
     #Searching For The Name In The Database (or Anything Like It)
@@ -142,12 +142,12 @@ f = input("Hi , What Would You Like To Do ? ( Search - ADD - Remove - Create Bar
 if f != "search" and f != 'add' and f != 'remove' and f != r"create barcodes" and f != "excel":
     print("Invalid Command")
 elif f == 'search' :
-    Search_Name()
+    search_name()
 elif f == 'add' :
-    Add_item()
+    add_item()
 elif f == 'remove' :
-    Remove_item()
+    remove_item()
 elif f ==  r"create barcodes" :
-    Create_Barcode()
+    create_barcode()
 elif f == r"excel" :
-    Excel_Data()
+    excel_data()
