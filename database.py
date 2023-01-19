@@ -1,7 +1,11 @@
+import sys
 import sqlite3
 import openpyxl
 from barcode import Code39
 from barcode.writer import ImageWriter
+import arabic_reshaper
+from bidi.algorithm import get_display
+
 
 #Creating The Database File And opening It
 db = sqlite3.connect("Stock.db")
@@ -9,11 +13,13 @@ c = db.cursor()
 
 
 def Search_data():
+    #Getting The User Input And Making It UPPER To Match The Database
     code = input('Input Your Code: ').upper()
-    print(code)
+    #Checking If The Code Is Correct
     if len(code) != 6 :
         print("Code Incorrect")
     else:
+        #Searching For The Code In The Database
         d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(code,),).fetchall()
         print(d)
 
@@ -65,20 +71,26 @@ def Excel_Data():
 
 
 def Add_item():
+    #Getting The User Input
     Item_ID = input("Enter Item ID: ").upper()
     n = int(input("Enter Added Number: "))
-
+    #Checking If The Product-Code Exist
     if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str():
         print("Code Incorrect")
     else:
+            #Searching For The Product
             d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
+            #Looping To Convert The Data From Tuple To Int
             for i in d :
-                print(type(i))
+                #Converting The Type Of i From Tuple To Int
                 i = int(i)
                 print(f"Old Number : {i}")
+                #Adding The New Given Number To The Old Number
                 new_n = i + n
                 print(f"New Number : {new_n}")
+                #Updating The Database With The New Data
                 c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
+            #printing The Results
             d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
             print(d)
             db.commit()
@@ -86,31 +98,45 @@ def Add_item():
 
 
 def Remove_item():
+    #Getting The User Input
     Item_ID = input("Enter Item ID: ").upper()
     n = int(input("Enter Removed Number: "))
-
+    #Checking If The Product-Code Exist
     if len(Item_ID) > 6 or len(Item_ID) < 6 and type(Item_ID) != str():
         print("Code Incorrect")
     else:
+            #Searching For The Product
             d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
+            #Looping To Convert The Data From Tuple To Int
             for i in d :
-                print(type(i))
+                #Converting The Type Of i From Tuple To Int
                 i = int(i)
                 print(f"Old Number : {i}")
+                #Removing The New Given Number From The Old Number
                 new_n = i - n
                 print(f"New Number : {new_n}")
+                #Updating The Database With The New Data
                 c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
+            #printing The Results
             d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
             print(d)
             db.commit()
 
 
 def Search_Name():
+    #Getting The User Input
     code = input('Input Your Product Name: ')
-    print(code)
+    #Searching For The Name In The Database (or Anything Like It)
     d = c.execute(f"SELECT * FROM Main WHERE Product_Name LIKE ?",("%" + code + "%",),).fetchall()
+    #Looping To Convert Type Of Data From Tuple To List
     for i in d :
-        print(i)
+        print("Product Code:" + i[0])
+        #Correcting The Arabic Text RTL And Joining The Letters
+        text = arabic_reshaper.reshape(i[1])
+        print("Product Name:" + get_display(text))
+        print("Product QTY:" + i[2])
+        print("\n")
+
 
 
 f = input("Hi , What Would You Like To Do ? ( Search - ADD - Remove - Create Barcodes) : ").lower()
