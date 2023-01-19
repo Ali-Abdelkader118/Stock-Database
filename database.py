@@ -19,7 +19,7 @@ def Search_data():
         print("Code Incorrect")
     else:
         #Searching For The Code In The Database
-        d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(code,),).fetchall()
+        d = c.execute("SELECT * FROM Main WHERE Barcode=?",(code,),).fetchall()
         print(d)
 
 
@@ -27,7 +27,7 @@ def Search_data():
 
 def Create_Barcode():
     #Getting Data From The Database
-    c.execute(f'''select Barcode , Product_Name from Main''')
+    c.execute('''select Barcode , Product_Name from Main''')
     data = c.fetchall()
     #Looping For Creating The Barcode
     for i in data:
@@ -45,22 +45,22 @@ def Excel_Data():
     #Getting The User Input For The File Name And Number Of Rows 
     n_rows = int(input("Enter Number Of Rows: "))
     #Opening the Excel
-    wb = openpyxl.load_workbook(f"Data/Main.xlsx")
+    wb = openpyxl.load_workbook("Data/Main.xlsx")
     ws = wb.active
     ID = 1
     #Creating The Table If Not Exist
-    c.execute(f"DROP TABLE IF EXISTS Main")
-    c.execute(f"CREATE TABLE Main(Barcode TEXT NOT NULL UNIQUE, Product_Name TEXT NOT NULL , QTY TEXT NOT NULL)")
+    c.execute("DROP TABLE IF EXISTS Main")
+    c.execute("CREATE TABLE Main(Barcode TEXT NOT NULL UNIQUE, Product_Name TEXT NOT NULL , QTY TEXT NOT NULL)")
     while ID <= n_rows:
         # Getting The Data From Excel
         Barcode = ws[f"A{ID}"].value
         Product_Name = ws[f"B{ID}"].value
         n = 1
         #Inserting The Data Into Sqlite Database
-        c.execute(f"INSERT INTO Main(Barcode , Product_Name, QTY) values(?, ?, ?)",(Barcode , Product_Name, n))
+        c.execute("INSERT INTO Main(Barcode , Product_Name, QTY) values(?, ?, ?)",(Barcode , Product_Name, n))
         #Printing The Final Result
         print("Data Inserted in the table: ")
-        data=c.execute(f'''SELECT * FROM Main''')
+        data=c.execute('''SELECT * FROM Main''')
         for row in data:
             print(row)
         #increasing the ID Count to Switch to next Row
@@ -78,7 +78,7 @@ def Add_item():
         print("Code Incorrect")
     else:
         #Searching For The Product
-        d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
+        d = c.execute("SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
         #Looping To Convert The Data From Tuple To Int
         for i in d :
             #Converting The Type Of i From Tuple To Int
@@ -90,7 +90,7 @@ def Add_item():
             #Updating The Database With The New Data
             c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
         #printing The Results
-        d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
+        d = c.execute("SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
         print(d)
         db.commit()
 
@@ -105,7 +105,7 @@ def Remove_item():
         print("Code Incorrect")
     else:
         #Searching For The Product
-        d = c.execute(f"SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
+        d = c.execute("SELECT QTY FROM Main WHERE Barcode=?",(Item_ID,),).fetchone()
         #Looping To Convert The Data From Tuple To Int
         for i in d :
             #Converting The Type Of i From Tuple To Int
@@ -117,7 +117,7 @@ def Remove_item():
             #Updating The Database With The New Data
             c.execute(f"UPDATE {Item_ID[0]} SET QTY={new_n} WHERE Barcode=?",(Item_ID,),)
         #printing The Results
-        d = c.execute(f"SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
+        d = c.execute("SELECT * FROM Main WHERE Barcode=?",(Item_ID,),).fetchall()
         print(d)
         db.commit()
 
@@ -126,7 +126,7 @@ def Search_Name():
     #Getting The User Input
     code = input('Input Your Product Name: ')
     #Searching For The Name In The Database (or Anything Like It)
-    d = c.execute(f"SELECT * FROM Main WHERE Product_Name LIKE ?",("%" + code + "%",),).fetchall()
+    d = c.execute("SELECT * FROM Main WHERE Product_Name LIKE ?",("%" + code + "%",),).fetchall()
     #Looping To Convert Type Of Data From Tuple To List
     for i in d :
         print("Product Code:" + i[0])
